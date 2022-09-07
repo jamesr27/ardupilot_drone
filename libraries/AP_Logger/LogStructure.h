@@ -448,7 +448,7 @@ struct PACKED log_TERRAIN {
 
 struct PACKED log_CSRV {
     LOG_PACKET_HEADER;
-    uint64_t time_us;     
+    uint64_t time_us;
     uint8_t id;
     float position;
     float force;
@@ -720,6 +720,23 @@ struct PACKED log_PSCD {
     float accel_desired;
     float accel_target;
     float accel;
+};
+
+// James adds two anemometer structures
+struct PACKED log_anemometer1 {
+    LOG_PACKET_HEADER;
+    uint64_t time_us;
+    float u;
+    float v;
+    float w;
+};
+
+struct PACKED log_anemometer2 {
+    LOG_PACKET_HEADER;
+    uint64_t time_us;
+    float u;
+    float v;
+    float w;
 };
 
 // FMT messages define all message formats other than FMT
@@ -1336,7 +1353,14 @@ LOG_STRUCTURE_FROM_VISUALODOM \
       { LOG_PSCE_MSG, sizeof(log_PSCE), \
         "PSCE", "Qffffffff", "TimeUS,TPE,PE,DVE,TVE,VE,DAE,TAE,AE", "smmnnnooo", "F00000000" }, \
       { LOG_PSCD_MSG, sizeof(log_PSCD), \
-        "PSCD", "Qffffffff", "TimeUS,TPD,PD,DVD,TVD,VD,DAD,TAD,AD", "smmnnnooo", "F00000000" }
+        "PSCD", "Qffffffff", "TimeUS,TPD,PD,DVD,TVD,VD,DAD,TAD,AD", "smmnnnooo", "F00000000" }, \
+      { LOG_ANEMOMETER1_MSG, sizeof(log_anemometer1), \
+        "ANM1", "Qfff", "TimeUS,U,V,W", "snnn","F000"}, \
+      { LOG_ANEMOMETER2_MSG, sizeof(log_anemometer2), \
+          "ANM2", "Qfff", "TimeUS,U,V,W", "snnn","F000"}
+
+// James must add here?
+
 
 // @LoggerMessage: SBPH
 // @Description: Swift Health Data
@@ -1451,6 +1475,9 @@ enum LogMessages : uint8_t {
     LOG_PSCD_MSG,
     LOG_RAW_PROXIMITY_MSG,
     LOG_IDS_FROM_PRECLAND,
+
+    LOG_ANEMOMETER1_MSG,
+    LOG_ANEMOMETER2_MSG,
 
     _LOG_LAST_MSG_
 };

@@ -74,6 +74,12 @@
  *
  */
 
+// James' modified version.
+// We add reading and logging of our anemometers.
+// To start with we log dummy values to the log to check that everything works.
+// We will call our logging functions at 20Hz, the anemoeters are outputting at 10 Hz. We shouldn't fall behind this way.
+//
+
 #include "Copter.h"
 
 #define FORCE_VERSION_H_INCLUDE
@@ -205,6 +211,9 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
 #if STATS_ENABLED == ENABLED
     SCHED_TASK_CLASS(AP_Stats,             &copter.g2.stats,            update,           1, 100),
 #endif
+// James adds our anemometer logging to the scheduler
+    SCHED_TASK(anemometor_logging,             20,     1000),
+
 };
 
 void Copter::get_scheduler_tasks(const AP_Scheduler::Task *&tasks,
@@ -522,6 +531,41 @@ void Copter::twentyfive_hz_logging()
     }
 #endif
 }
+
+// James addition.
+// Log anemometer reading
+void Copter::anemometor_logging()
+{
+  // Get the readings from serial (Not implemeted).
+
+
+  // Debug test
+  float u1 = 1.123;
+  float v1 = 2.123;
+  float w1 = 3.123;
+  float u2 = 4.123;
+  float v2 = 5.123;
+  float w2 = 6.123;
+
+  // Set these appropriately if new data have been received.
+  bool update1 = true;
+  bool update2 = true;
+
+
+  // If update log data to log file.
+  if (update1){
+    Log_Write_Anemometer1(u1,v1,w1);
+  }
+
+  if (update2){
+    Log_Write_Anemometer2(u2,v2,w2);
+  }
+
+}
+
+
+
+
 
 // three_hz_loop - 3.3hz loop
 void Copter::three_hz_loop()

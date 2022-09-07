@@ -29,7 +29,7 @@
 
 // Common dependencies
 #include <AP_Common/AP_Common.h>            // Common definitions and utility routines for the ArduPilot libraries
-#include <AP_Common/Location.h>             // Library having the implementation of location class         
+#include <AP_Common/Location.h>             // Library having the implementation of location class
 #include <AP_Param/AP_Param.h>              // A system for managing and storing variables that are of general interest to the system.
 #include <StorageManager/StorageManager.h>  // library for Management for hal.storage to allow for backwards compatible mapping of storage offsets to available storage
 
@@ -668,6 +668,9 @@ private:
     void read_AHRS(void);
     void update_altitude();
 
+    // James address
+    void anemometor_logging();
+
     // Attitude.cpp
     void update_throttle_hover();
     float get_pilot_desired_climb_rate(float throttle_control);
@@ -795,6 +798,9 @@ private:
     void Log_Write_Data(LogDataID id, float value);
     void Log_Write_Parameter_Tuning(uint8_t param, float tuning_val, float tune_min, float tune_max);
     void Log_Sensor_Health();
+    void Log_Write_Anemometer1(float ui, float vi, float wi);
+    void Log_Write_Anemometer2(float ui, float vi, float wi);
+
 #if FRAME_CONFIG == HELI_FRAME
     void Log_Write_Heli(void);
 #endif
