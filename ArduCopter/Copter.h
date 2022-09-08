@@ -69,6 +69,11 @@
 #include <AP_ADSB/AP_ADSB.h>                // ADS-B RF based collision avoidance module library
 #include <AP_Proximity/AP_Proximity.h>      // ArduPilot proximity sensor library
 
+
+// Anemometers
+#include "AP_Anemometer1.h"       // Anemometer 1
+
+
 // Configuration
 #include "defines.h"
 #include "config.h"
@@ -670,6 +675,8 @@ private:
 
     // James address
     void anemometor_logging();
+//    bool read_anemometer1();
+//    bool read_anemometer2();
 
     // Attitude.cpp
     void update_throttle_hover();

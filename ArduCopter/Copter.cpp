@@ -216,6 +216,14 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
 
 };
 
+
+// James. Make our anemometer classes?
+Anemometer1 anemometer1;
+Anemometer2 anemometer2;
+
+
+
+
 void Copter::get_scheduler_tasks(const AP_Scheduler::Task *&tasks,
                                  uint8_t &task_count,
                                  uint32_t &log_bit)
@@ -536,21 +544,32 @@ void Copter::twentyfive_hz_logging()
 // Log anemometer reading
 void Copter::anemometor_logging()
 {
-  // Get the readings from serial (Not implemeted).
+  bool update1 = false;
+  bool update2 = false;
 
+  // Get the readings from serial.
+  anemometer1.update();
+  anemometer2.update();
+  update1 = anemometer1.updated;
+  update2 = anemometer2.updated;
 
   // Debug test
-  float u1 = 1.123;
-  float v1 = 2.123;
-  float w1 = 3.123;
-  float u2 = 4.123;
-  float v2 = 5.123;
-  float w2 = 6.123;
-
   // Set these appropriately if new data have been received.
-  bool update1 = true;
-  bool update2 = true;
+  // update1 = true;
+  // update2 = true;
+  // float u1 = 1.123;
+  // float v1 = 2.123;
+  // float w1 = 3.123;
+  // float u2 = 4.123;
+  // float v2 = 5.123;
+  // float w2 = 6.123;
 
+  float u1 = anemometer1.u;
+  float v1 = anemometer1.v;
+  float w1 = anemometer1.w;
+  float u2 = anemometer2.u;
+  float v2 = anemometer2.v;
+  float w2 = anemometer2.w;
 
   // If update log data to log file.
   if (update1){
@@ -560,7 +579,6 @@ void Copter::anemometor_logging()
   if (update2){
     Log_Write_Anemometer2(u2,v2,w2);
   }
-
 }
 
 
