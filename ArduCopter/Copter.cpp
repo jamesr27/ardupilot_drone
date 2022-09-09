@@ -218,10 +218,12 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
 
 
 // James. Make our anemometer classes?
+// Set these up and open serial ports.
 Anemometer1 anemometer1;
 Anemometer2 anemometer2;
 
-
+anemometer1.init_serial(0);   // Find out what we need to give this. We use protocol -1. This should give us the first with -1 selected. Maybe we should use different numbers?
+//anemometer2.init_serial(1);
 
 
 void Copter::get_scheduler_tasks(const AP_Scheduler::Task *&tasks,
@@ -549,9 +551,9 @@ void Copter::anemometor_logging()
 
   // Get the readings from serial.
   anemometer1.update();
-  anemometer2.update();
+  //anemometer2.update();
   update1 = anemometer1.updated;
-  update2 = anemometer2.updated;
+  //update2 = anemometer2.updated;
 
   // Debug test
   // Set these appropriately if new data have been received.
@@ -560,16 +562,17 @@ void Copter::anemometor_logging()
   // float u1 = 1.123;
   // float v1 = 2.123;
   // float w1 = 3.123;
-  // float u2 = 4.123;
-  // float v2 = 5.123;
-  // float w2 = 6.123;
+  float u2 = 4.123;
+  float v2 = 5.123;
+  float w2 = 6.123;
+  update2 = true;
 
   float u1 = anemometer1.u;
   float v1 = anemometer1.v;
   float w1 = anemometer1.w;
-  float u2 = anemometer2.u;
-  float v2 = anemometer2.v;
-  float w2 = anemometer2.w;
+  //float u2 = anemometer2.u;
+  //float v2 = anemometer2.v;
+  //float w2 = anemometer2.w;
 
   // If update log data to log file.
   if (update1){

@@ -11,10 +11,24 @@ bool read_anemometer2();
 
 // Anemometer class. We're going to be very lazy and non-OOP complaint And
 // make duplicate classes for each anemometer.
+
+class Anemometer1_Backend  // Note that this will include the serial stuff, I'm not separating that into to classes.
+{
+public:
+
+
+
+
+};
+
+
+class Anemometer2_Backend
+{
+
+};
+
 class Anemometer1
 {
-  //friend class Anemometer1_backend;    // Include when we get to the backend
-
 public:
   float u;
   float v;
@@ -22,6 +36,28 @@ public:
   bool updated;
 
   void update();
+
+  uint8t serial_instance;
+  void init_serial(uint8t serial_instance);
+  virtual bool get_reading(uint16_t &reading_cm) = 0;
+
+private:
+  char linebuf[50];           // legacy protocol buffer
+  char bytes1[7];
+  char bytes2[7];
+  char bytes3[7];
+  uint8_t linebuf_len;        // legacy protocol buffer length
+  bool partialMessage = false;
+
+protected:
+    // baudrate used during object construction:
+    virtual uint32_t initial_baudrate(uint8_t serial_instance) const;
+
+    // the value 0 is special to the UARTDriver - it's "use default"
+    virtual uint16_t rx_bufsize() const { return 0; }
+    virtual uint16_t tx_bufsize() const { return 0; }
+
+    AP_HAL::UARTDriver *uart = nullptr;
 
 //   static Anemometer1 *get_singleton(void) { return _singleton; }
 //
@@ -39,7 +75,7 @@ public:
 
 class Anemometer2
 {
-  //friend class Anemometer2_backend;    // Include when we get to the backend
+  friend class Anemometer2_Backend;
 
 public:
   float u;
@@ -53,7 +89,5 @@ public:
 // private:
 //     static Anemometer2 *_singleton;
 };
-
-
 
 // Anemometer2 *anemometer2();
