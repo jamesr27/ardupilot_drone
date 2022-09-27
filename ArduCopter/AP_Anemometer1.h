@@ -30,16 +30,25 @@ class Anemometer2_Backend
 class Anemometer1
 {
 public:
+  static Anemometer1 *_singleton;
   float u;
   float v;
   float w;
   bool updated;
+  bool serialStarted = false;
 
   void update();
 
-  uint8t serial_instance;
-  void init_serial(uint8t serial_instance);
-  virtual bool get_reading(uint16_t &reading_cm) = 0;
+  uint8_t serial_instance;
+  void init_serial(uint8_t _serial_instance);
+  bool get_reading() ; //was virtual = 0
+
+  static Anemometer1 *getInstance() {
+    _singleton = new Anemometer1;
+    return _singleton;
+  }
+
+ //static Anemometer1 *get_singleton(void) { return _singleton; }
 
 private:
   char linebuf[50];           // legacy protocol buffer
@@ -49,20 +58,19 @@ private:
   uint8_t linebuf_len;        // legacy protocol buffer length
   bool partialMessage = false;
 
+
 protected:
+    // I remove the virtuals from the below, I don't think that we need them.
     // baudrate used during object construction:
-    virtual uint32_t initial_baudrate(uint8_t serial_instance) const;
+    uint32_t initial_baudrate(uint8_t _serial_instance);// const; // was virtual
 
     // the value 0 is special to the UARTDriver - it's "use default"
-    virtual uint16_t rx_bufsize() const { return 0; }
-    virtual uint16_t tx_bufsize() const { return 0; }
+    uint16_t rx_bufsize() const { return 0; }   // was virtual
+    uint16_t tx_bufsize() const { return 0; }   // was virtual
 
     AP_HAL::UARTDriver *uart = nullptr;
 
-//   static Anemometer1 *get_singleton(void) { return _singleton; }
-//
-// private:
-//     static Anemometer1 *_singleton;
+
 };
 
 // I don't know what the fuck the below does, but I assume they are just using this class as like a static class or something.

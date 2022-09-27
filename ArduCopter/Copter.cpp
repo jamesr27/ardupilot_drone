@@ -219,10 +219,22 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
 
 // James. Make our anemometer classes?
 // Set these up and open serial ports.
-Anemometer1 anemometer1;
+//Anemometer1 anemometer1;
+//Anemometer1 *Anemometer1::_singleton;
+
+
+//Anemometer1* Anemometer1::_singleton = new Anemometer1();
+Anemometer1 *Anemometer1::_singleton = NULL;
+
+Anemometer1* anemometer1 = anemometer1->getInstance();
+
+
+
+
+
 Anemometer2 anemometer2;
 
-anemometer1.init_serial(0);   // Find out what we need to give this. We use protocol -1. This should give us the first with -1 selected. Maybe we should use different numbers?
+//anemometer1.init_serial(0);   // Find out what we need to give this. We use protocol -1. This should give us the first with -1 selected. Maybe we should use different numbers?
 //anemometer2.init_serial(1);
 
 
@@ -546,13 +558,19 @@ void Copter::twentyfive_hz_logging()
 // Log anemometer reading
 void Copter::anemometor_logging()
 {
+  // Brute force starting the serial ports. Awful, but otherwise hard to do with time available.
+  if (anemometer1->serialStarted == false) {
+    anemometer1->init_serial(0);
+    anemometer1->serialStarted = true;
+  }
+
   bool update1 = false;
   bool update2 = false;
 
   // Get the readings from serial.
-  anemometer1.update();
+  anemometer1->update();
   //anemometer2.update();
-  update1 = anemometer1.updated;
+  update1 = anemometer1->updated;
   //update2 = anemometer2.updated;
 
   // Debug test
@@ -567,9 +585,9 @@ void Copter::anemometor_logging()
   float w2 = 6.123;
   update2 = true;
 
-  float u1 = anemometer1.u;
-  float v1 = anemometer1.v;
-  float w1 = anemometer1.w;
+  float u1 = anemometer1->u;
+  float v1 = anemometer1->v;
+  float w1 = anemometer1->w;
   //float u2 = anemometer2.u;
   //float v2 = anemometer2.v;
   //float w2 = anemometer2.w;

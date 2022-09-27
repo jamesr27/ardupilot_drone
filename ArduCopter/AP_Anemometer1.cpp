@@ -39,15 +39,15 @@ void Anemometer1::update() {
   updated =   get_reading();
 
   // Update public variables.
-
+  // Should have been done in the get_reading function.
 
 
 
   // Debug
   updated = true;
-  u = 1.123;
-  v = 2.123;
-  w = 3.123;
+  // u = 1.123;
+  // v = 2.123;
+  // w = 3.123;
 }
 
 
@@ -89,27 +89,27 @@ void Anemometer2::update() {
 // The backend read bytes method is called by the update method, which is called from Copter.cpp
 //
 
-void Anemometer1::init_serial(uint8t serial_instance)
+void Anemometer1::init_serial(uint8_t _serial_instance)
 {
-  uart = AP::serialmanager().find_serial(AP_SerialManager::SerialProtocol_None, serial_instance);
+  uart = AP::serialmanager().find_serial(AP_SerialManager::SerialProtocol_None, _serial_instance);
   if (uart != nullptr) {
-      uart->begin(initial_baudrate(serial_instance), rx_bufsize(), tx_bufsize());
+      uart->begin(initial_baudrate(_serial_instance), rx_bufsize(), tx_bufsize());
   }
 }
 
-uint32_t Anemometer1::initial_baudrate(const uint8_t serial_instance) const
+uint32_t Anemometer1::initial_baudrate(const uint8_t _serial_instance) //const
 {
-    return AP::serialmanager().find_baudrate(AP_SerialManager::SerialProtocol_Rangefinder, serial_instance);
+    return AP::serialmanager().find_baudrate(AP_SerialManager::SerialProtocol_None, _serial_instance);
 }
 
-bool Anemometer1::get_reading(uint16_t &reading_cm)
+bool Anemometer1::get_reading()
 {
     if (uart == nullptr) {
         return false;
     }
 
     // Are there byte available?
-    int16 nbytes = uart->available();
+    int16_t nbytes = uart->available();
     // I add a 2 in here, because I only want to process if there are at least two bytes in the buffer (there's an edge case that can occur when only 1 byte is in the buffer that I am lazily trying to avoid).
     if (nbytes <= 2){
       updated = false;
@@ -148,21 +148,21 @@ bool Anemometer1::get_reading(uint16_t &reading_cm)
           nbytes--;
 
           // Get reading 1
-          for (int i = 0, i < 7 ,i++){
+          for (int i = 0; i < 7 ;i++){
             bytes1[i] = uart->read(); nbytes--;
           }
           // Get the ','
           c = uart->read();
           nbytes--;
           // Get reading 2
-          for (int i = 0, i < 7 ,i++){
+          for (int i = 0; i < 7 ;i++){
             bytes2[i] = uart->read(); nbytes--;
           }
           // Get the ','
           c = uart->read();
           nbytes--;
           // Get reading 3
-          for (int i = 0, i < 7 ,i++){
+          for (int i = 0; i < 7 ;i++){
             bytes3[i] = uart->read(); nbytes--;
           }
           _foundBeginning = false;
