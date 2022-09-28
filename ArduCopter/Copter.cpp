@@ -575,11 +575,6 @@ void Copter::anemometor_logging()
 
   // Debug test
   // Set these appropriately if new data have been received.
-  // update1 = true;
-  // update2 = true;
-  // float u1 = 1.123;
-  // float v1 = 2.123;
-  // float w1 = 3.123;
   float u2 = 4.123;
   float v2 = 5.123;
   float w2 = 6.123;

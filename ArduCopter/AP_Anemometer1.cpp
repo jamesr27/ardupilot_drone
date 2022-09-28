@@ -7,6 +7,18 @@
 #include "copter.h"   // Includes anemometer.h
 #include <AP_SerialManager/AP_SerialManager.h>
 #include <ctype.h>
+#include <stdlib.h>
+
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+#include <AP_HAL/AP_HAL.h>
+#include <AP_Logger/AP_Logger.h>
+#include "pthread.h"
+#include <AP_HAL/utility/replace.h>
 
 extern const AP_HAL::HAL& hal;
 
@@ -36,18 +48,7 @@ extern const AP_HAL::HAL& hal;
 // The anemometer class update functions
 void Anemometer1::update() {
   // Fire off the backend. Read the serial data and process.
-  updated =   get_reading();
-
-  // Update public variables.
-  // Should have been done in the get_reading function.
-
-
-
-  // Debug
-  updated = true;
-  // u = 1.123;
-  // v = 2.123;
-  // w = 3.123;
+  updated = get_reading();
 }
 
 
@@ -108,7 +109,7 @@ bool Anemometer1::get_reading()
         return false;
     }
 
-    // Are there byte available?
+    // Are there bytes available?
     int16_t nbytes = uart->available();
     // I add a 2 in here, because I only want to process if there are at least two bytes in the buffer (there's an edge case that can occur when only 1 byte is in the buffer that I am lazily trying to avoid).
     if (nbytes <= 2){
@@ -147,22 +148,49 @@ bool Anemometer1::get_reading()
           c = uart->read();
           nbytes--;
 
-          // Get reading 1
-          for (int i = 0; i < 7 ;i++){
+          // Get reading 1. Start with sign
+          c = uart->read();
+          nbytes--;
+          if (c == '+'){
+            sign1 = 1.0;
+          }
+          else {
+            sign1 = -1.0;
+          }
+          for (int i = 0; i < 6 ;i++){
             bytes1[i] = uart->read(); nbytes--;
           }
           // Get the ','
           c = uart->read();
           nbytes--;
+
+          // Reading 2, start with sign.
+          c = uart->read();
+          nbytes--;
+          if (c == '+'){
+            sign2 = 1.0;
+          }
+          else {
+            sign2 = -1.0;
+          }
           // Get reading 2
-          for (int i = 0; i < 7 ;i++){
+          for (int i = 0; i < 6 ;i++){
             bytes2[i] = uart->read(); nbytes--;
           }
           // Get the ','
           c = uart->read();
           nbytes--;
+          // Reading 3, start with sign
+          c = uart->read();
+          nbytes--;
+          if (c == '+'){
+            sign3 = 1.0;
+          }
+          else {
+            sign3 = -1.0;
+          }
           // Get reading 3
-          for (int i = 0; i < 7 ;i++){
+          for (int i = 0; i < 6 ;i++){
             bytes3[i] = uart->read(); nbytes--;
           }
           _foundBeginning = false;
@@ -185,10 +213,16 @@ bool Anemometer1::get_reading()
     // Format is:
     //  '+UUU.UU'
 
+    // Parse U
+    u = (float)(sign1 * atof(bytes1));
+    v = (float)(sign2 * atof(bytes2));
+    w = (float)(sign3 * atof(bytes3));
+
+
     // Debug
-    u = 10;
-    v = 11;
-    w = 12;
+    //u = 10;
+    //v = 11;
+    //w = 12;
 
     return true;
 

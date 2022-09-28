@@ -52,11 +52,14 @@ public:
 
 private:
   char linebuf[50];           // legacy protocol buffer
-  char bytes1[7];
-  char bytes2[7];
-  char bytes3[7];
+  char bytes1[6];
+  char bytes2[6];
+  char bytes3[6];
   uint8_t linebuf_len;        // legacy protocol buffer length
   bool partialMessage = false;
+  float sign1 = 1.0;
+  float sign2 = 1.0;
+  float sign3 = 1.0;
 
 
 protected:
