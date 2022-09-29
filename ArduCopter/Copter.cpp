@@ -218,24 +218,12 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
 
 
 // James. Make our anemometer classes?
-// Set these up and open serial ports.
-//Anemometer1 anemometer1;
-//Anemometer1 *Anemometer1::_singleton;
-
-
-//Anemometer1* Anemometer1::_singleton = new Anemometer1();
 Anemometer1 *Anemometer1::_singleton = NULL;
-
 Anemometer1* anemometer1 = anemometer1->getInstance();
+Anemometer2 *Anemometer2::_singleton = NULL;
+Anemometer2* anemometer2 = anemometer2->getInstance();
 
 
-
-
-
-Anemometer2 anemometer2;
-
-//anemometer1.init_serial(0);   // Find out what we need to give this. We use protocol -1. This should give us the first with -1 selected. Maybe we should use different numbers?
-//anemometer2.init_serial(1);
 
 
 void Copter::get_scheduler_tasks(const AP_Scheduler::Task *&tasks,
@@ -564,28 +552,34 @@ void Copter::anemometor_logging()
     anemometer1->serialStarted = true;
   }
 
+  if (anemometer2->serialStarted == false) {
+    anemometer2->init_serial(1);                    // I think we need to find the second instance of the protocol we want, which should be port 4, or gps2. If you configure that correctly in mission planner.
+    anemometer2->serialStarted = true;
+  }
+
+
   bool update1 = false;
   bool update2 = false;
 
   // Get the readings from serial.
   anemometer1->update();
-  //anemometer2.update();
+  anemometer2->update();
   update1 = anemometer1->updated;
-  //update2 = anemometer2.updated;
+  update2 = anemometer2->updated;
 
   // Debug test
   // Set these appropriately if new data have been received.
-  float u2 = 4.123;
-  float v2 = 5.123;
-  float w2 = 6.123;
-  update2 = true;
+  // float u2 = 4.123;
+  // float v2 = 5.123;
+  // float w2 = 6.123;
+  // update2 = true;
 
   float u1 = anemometer1->u;
   float v1 = anemometer1->v;
   float w1 = anemometer1->w;
-  //float u2 = anemometer2.u;
-  //float v2 = anemometer2.v;
-  //float w2 = anemometer2.w;
+  float u2 = anemometer2->u;
+  float v2 = anemometer2->v;
+  float w2 = anemometer2->w;
 
   // If update log data to log file.
   if (update1){
@@ -596,9 +590,6 @@ void Copter::anemometor_logging()
     Log_Write_Anemometer2(u2,v2,w2);
   }
 }
-
-
-
 
 
 // three_hz_loop - 3.3hz loop

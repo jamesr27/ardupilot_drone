@@ -675,8 +675,6 @@ private:
 
     // James address
     void anemometor_logging();
-//    bool read_anemometer1();
-//    bool read_anemometer2();
 
     // Attitude.cpp
     void update_throttle_hover();
